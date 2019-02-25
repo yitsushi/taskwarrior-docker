@@ -1,0 +1,30 @@
+#!/usr/bin/env ash
+
+org="$1"
+username="$2"
+
+if [[ -z "$org" ]]; then
+  echo "$0 <org> <user>"
+  return 1
+fi
+
+if [[ -z "$username" ]]; then
+  echo "$0 <org> <user>"
+  return 1
+fi
+
+export SERVER=$(hostname -f)
+export CN=$SERVER
+
+echo "creating $org/$username"
+
+taskd add user "$org" "$username"
+
+cd $TASKDDATA/pki
+
+uname=$(echo "$username" | tr '[:upper:]' '[:lower:]' | sed -Ee 's/[^a-z]/_/g;s/_+/_/g')
+
+./generate.client "$uname" > /dev/null 2>&1
+
+tar zcf "/data/certs/$uname.tar.gz" "$uname.cert.pem" "$uname.key.pem" ca.cert.pem
+echo "/data/certs/$uname.tar.gz created"

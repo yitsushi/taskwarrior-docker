@@ -1,0 +1,9 @@
+#!/usr/bin/env ash
+
+if [[ -z "$1" ]]; then
+  org="$1"
+  echo "$0 <org>"
+  return 1
+fi
+
+taskd add org "$1"
